@@ -54,7 +54,7 @@ A modern web application for tracking investments and managing financial portfol
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/DadvaiahPavan/AI-Finance-Management-System.git
 cd Finance
 ```
 
