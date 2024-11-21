@@ -829,7 +829,7 @@ def investments():
         
         # RapidAPI configuration
         headers = {
-            'x-rapidapi-key': 'rplace your rapid api key',
+            'x-rapidapi-key': 'cd4e31604emsh7ed111fe92eb991p144247jsn974f92dca7e8',
             'x-rapidapi-host': 'yahoo-finance15.p.rapidapi.com'
         }
         
@@ -1065,4 +1065,5 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, debug=False)
