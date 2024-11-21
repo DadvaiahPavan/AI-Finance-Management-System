@@ -2,6 +2,9 @@
 
 A modern web application for tracking investments and managing financial portfolios with real-time market data and AI-powered insights.
 
+
+![Web UI](https://i.ibb.co/mbDZzLd/Screenshot-2024-11-21-140537.png)
+
 ## Features
 
 ### Investment Tracking
