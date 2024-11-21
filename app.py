@@ -829,7 +829,7 @@ def investments():
         
         # RapidAPI configuration
         headers = {
-            'x-rapidapi-key': 'cd4e31604emsh7ed111fe92eb991p144247jsn974f92dca7e8',
+            'x-rapidapi-key': 'rplace your rapid api key',
             'x-rapidapi-host': 'yahoo-finance15.p.rapidapi.com'
         }
         
