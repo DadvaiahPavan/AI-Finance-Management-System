@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Investment Type Selection -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <ul class="nav nav-pills mb-3" id="investment-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="stocks-tab" data-bs-toggle="pill" data-bs-target="#stocks" type="button" role="tab">
+                        <i class="fas fa-chart-line me-2"></i>Stocks
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="crypto-tab" data-bs-toggle="pill" data-bs-target="#crypto" type="button" role="tab">
+                        <i class="fab fa-bitcoin me-2"></i>Cryptocurrency
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-content" id="investment-content">
+        <!-- Stocks Tab -->
+        <div class="tab-pane fade show active" id="stocks" role="tabpanel">
+            <!-- Stock Market Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Stock Market
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for stock in stock_data %}
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if stock.logo %}
+                                        <img src="{{ stock.logo }}" alt="{{ stock.symbol }}" class="me-2" style="width: 24px; height: 24px;">
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ stock.symbol }}</h6>
+                                            <small class="text-muted">{{ stock.name }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h4 class="mb-0">${{ "%.2f"|format(stock.price) }}</h4>
+                                        <span class="badge {{ 'bg-success' if stock.change_percent > 0 else 'bg-danger' }}">
+                                            {{ "%.2f"|format(stock.change_percent) }}%
+                                        </span>
+                                    </div>
+                                    <div class="row g-2 text-center">
+                                        <div class="col-6">
+                                            <div class="bg-light rounded p-2">
+                                                <small class="text-muted d-block">High</small>
+                                                <span>${{ "%.2f"|format(stock.high) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="bg-light rounded p-2">
+                                                <small class="text-muted d-block">Low</small>
+                                                <span>${{ "%.2f"|format(stock.low) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Recommendations -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i>Stock Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for recommendation in stock_recommendations %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recommendation.symbol }}</h5>
+                                    <p class="card-text">{{ recommendation.analysis }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">Target: ${{ recommendation.target_price }}</span>
+                                        <span class="badge {{ 'bg-success' if recommendation.recommendation == 'Buy' else 'bg-warning' }}">
+                                            {{ recommendation.recommendation }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crypto Tab -->
+        <div class="tab-pane fade" id="crypto" role="tabpanel">
+            <!-- Cryptocurrency Market Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fab fa-bitcoin me-2"></i>Cryptocurrency Market
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for crypto in crypto_data %}
+                        <div class="col-md-6 col-lg-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        {% if crypto.logo %}
+                                        <img src="{{ crypto.logo }}" alt="{{ crypto.symbol }}" class="me-2" style="width: 24px; height: 24px;">
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ crypto.symbol }}</h6>
+                                            <small class="text-muted">{{ crypto.name }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h4 class="mb-0">${{ "%.2f"|format(crypto.price) }}</h4>
+                                        <span class="badge {{ 'bg-success' if crypto.change_percent > 0 else 'bg-danger' }}">
+                                            {{ "%.2f"|format(crypto.change_percent) }}%
+                                        </span>
+                                    </div>
+                                    <div class="row g-2 text-center">
+                                        <div class="col-6">
+                                            <div class="bg-light rounded p-2">
+                                                <small class="text-muted d-block">24h High</small>
+                                                <span>${{ "%.2f"|format(crypto.high_24h) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="bg-light rounded p-2">
+                                                <small class="text-muted d-block">24h Low</small>
+                                                <span>${{ "%.2f"|format(crypto.low_24h) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crypto Recommendations -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i>Cryptocurrency Recommendations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for recommendation in crypto_recommendations %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recommendation.symbol }}</h5>
+                                    <p class="card-text">{{ recommendation.analysis }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">Target: ${{ recommendation.target_price }}</span>
+                                        <span class="badge {{ 'bg-success' if recommendation.recommendation == 'Buy' else 'bg-warning' }}">
+                                            {{ recommendation.recommendation }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Refresh data every minute -->
+<script>
+    setTimeout(function() {
+        location.reload();
+    }, 60000);
+</script>
+{% endblock %}

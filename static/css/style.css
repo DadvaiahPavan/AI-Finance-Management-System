@@ -1,0 +1,580 @@
+/* Dark Theme Base Styles */
+body {
+    background-color: #13111C;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Enhanced Navbar */
+.navbar {
+    background: rgba(19, 17, 28, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    background: linear-gradient(-45deg, #FF3366, #CB5EEE, #20C997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+    color: #CB5EEE !important;
+    text-shadow: none;
+}
+
+/* Card Base Styling */
+.card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 8px rgba(31, 38, 135, 0.05);
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.15s ease;
+}
+
+.card:hover {
+    border-color: rgba(203, 94, 238, 0.15);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(203, 94, 238, 0.03),
+        transparent
+    );
+    opacity: 0;
+}
+
+.card-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.2rem;
+    border-radius: 20px 20px 0 0;
+}
+
+.card-body {
+    position: relative;
+    z-index: 1;
+}
+
+/* Card Content Animation */
+.card-header i {
+    transition: color 0.15s ease;
+}
+
+.card:hover .card-header i {
+    color: rgba(203, 94, 238, 0.7);
+}
+
+.badge {
+    transition: none;
+}
+
+.card:hover .badge {
+    background-color: rgba(203, 94, 238, 0.9);
+}
+
+/* Progress Bar Enhancement */
+.progress {
+    background: rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.3s ease-out;
+    background: linear-gradient(
+        45deg,
+        rgba(203, 94, 238, 0.7),
+        rgba(32, 201, 151, 0.7)
+    );
+}
+
+/* Form Elements */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transition: border-color 0.15s ease;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    height: auto;
+}
+
+.form-control:hover, .form-select:hover {
+    border-color: rgba(203, 94, 238, 0.3);
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(203, 94, 238, 0.5);
+    box-shadow: none;
+    color: #fff;
+}
+
+/* Number Input Specific Styles */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Form Labels */
+.form-label {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Placeholder Color */
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Form Select Options */
+.form-select option {
+    background-color: #13111C;
+    color: #fff;
+    padding: 8px;
+}
+
+/* Input Group */
+.input-group {
+    background: transparent;
+}
+
+.input-group-text {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Dropdown Styles */
+.form-select option {
+    background-color: #13111C;
+    color: #fff;
+}
+
+.form-select:focus option:checked {
+    background: linear-gradient(45deg, #CB5EEE, #20C997);
+    color: #fff;
+}
+
+/* Custom colors for financial data */
+.income-text {
+    color: #20C997;
+    text-shadow: none;
+}
+
+.expense-text {
+    color: #FF3366;
+    text-shadow: none;
+}
+
+/* Enhanced Alert Styles */
+.alert {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-radius: 15px;
+}
+
+.alert-success {
+    background: rgba(32, 201, 151, 0.1);
+    border-color: rgba(32, 201, 151, 0.2);
+}
+
+.alert-danger {
+    background: rgba(255, 51, 102, 0.1);
+    border-color: rgba(255, 51, 102, 0.2);
+}
+
+/* Table Styles */
+.table {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    color: #CB5EEE;
+    position: sticky;
+    top: 0;
+    background: #13111C;
+    z-index: 1;
+    padding: 1rem;
+}
+
+.table td {
+    border-color: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Scrollable Table */
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+/* Custom Scrollbar */
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(203, 94, 238, 0.3);
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: rgba(203, 94, 238, 0.5);
+}
+
+/* Table Row Hover */
+.table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Table Badges */
+.table .badge {
+    font-size: 0.85em;
+    padding: 0.5em 0.8em;
+}
+
+/* Chart containers */
+.chart-container {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 1rem;
+    min-height: 300px;
+    margin-bottom: 1.5rem;
+    transition: none;
+}
+
+/* Investment Cards */
+.bg-light {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card .bg-light {
+    color: #fff;
+}
+
+.card .bg-light .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.card .bg-light span {
+    color: #fff;
+    font-weight: 500;
+}
+
+/* Badge colors */
+.badge.bg-success {
+    background: rgba(32, 201, 151, 0.2) !important;
+    color: #20C997;
+    border: 1px solid rgba(32, 201, 151, 0.3);
+}
+
+.badge.bg-danger {
+    background: rgba(255, 51, 102, 0.2) !important;
+    color: #FF3366;
+    border: 1px solid rgba(255, 51, 102, 0.3);
+}
+
+/* Market stats */
+.market-stat {
+    transition: none;
+}
+
+.market-stat:hover {
+    transform: none;
+}
+
+/* Empty State Styling */
+.text-center.py-4 {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 15px;
+    padding: 2rem !important;
+}
+
+.text-center.py-4 i {
+    color: rgba(255, 255, 255, 0.15);
+    margin-bottom: 1rem;
+}
+
+.text-center.py-4 p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+/* Progress Animations */
+.progress-bar {
+    transition: width 0.8s ease-in-out;
+}
+
+/* Badge Animations */
+.badge {
+    transition: none;
+}
+
+.badge:hover {
+    transform: none;
+}
+
+/* Icon Animations */
+.card-header i {
+    transition: color 0.15s ease;
+}
+
+.card:hover .card-header i {
+    color: rgba(203, 94, 238, 0.7);
+}
+
+/* Pattern Card Styling */
+.patterns-list .card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.patterns-list .card:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.patterns-list .progress {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.patterns-list .progress-bar {
+    transition: width 0.6s ease;
+}
+
+/* Footer Enhancement */
+.footer {
+    background: rgba(19, 17, 28, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: auto;
+    padding: 1.5rem 0;
+}
+
+.footer .fab {
+    font-size: 1.8rem;  /* Increased from default size */
+    transition: transform 0.2s ease;
+}
+
+.footer .fab:hover {
+    transform: scale(1.1);
+}
+
+.footer a {
+    transition: color 0.15s ease;
+}
+
+.footer a:hover {
+    color: #CB5EEE !important;
+    text-shadow: none;
+    transform: none;
+}
+
+.footer .fas {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+}
+
+.footer p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .navbar {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-container {
+        min-height: 200px;
+    }
+}
+
+/* Base Transitions */
+* {
+    transition: none;
+}
+
+*:hover {
+    transform: none !important;
+}
+
+/* SweetAlert2 Custom Styles */
+.colored-toast.swal2-icon-success {
+    background: linear-gradient(45deg, #20C997, #28a745) !important;
+}
+
+.colored-toast.swal2-icon-error {
+    background: linear-gradient(45deg, #dc3545, #c82333) !important;
+}
+
+.colored-toast {
+    border-radius: 10px !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.colored-toast .swal2-title,
+.colored-toast .swal2-content {
+    color: #fff !important;
+}
+
+.colored-toast .swal2-timer-progress-bar {
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Empty State Enhancement */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 15px;
+    margin: 1rem 0;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Mobile-friendly table styles */
+@media (max-width: 576px) {
+    .table-responsive-sm {
+        margin: 0 -15px;
+        padding: 0 15px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table-sm th,
+    .table-sm td {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .card-body {
+        padding: 1rem 0.5rem;
+    }
+
+    .alert {
+        margin: 0.5rem;
+        padding: 0.75rem;
+    }
+}
+
+/* Table header styles */
+.table thead.table-light {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+/* Improved table cell spacing */
+.table td, .table th {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Highlight active row on hover */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+    cursor: pointer;
+}
+
+/* Custom scrollbar for tables */
+.table-responsive-sm::-webkit-scrollbar {
+    height: 6px;
+}
+
+.table-responsive-sm::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-responsive-sm::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.table-responsive-sm::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.footer {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-link {
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+.social-link:hover {
+    color: #007bff;
+}

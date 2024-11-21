@@ -1,0 +1,508 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Financial Overview Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">Financial Overview</h2>
+        </div>
+        <!-- Summary Cards -->
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Balance</h5>
+                    <h2 class="card-text">₹{{ "{:,.2f}".format(remaining_amount) }}</h2>
+                    <p class="mb-0">Savings Rate: {{ "{:.1f}%".format(savings_rate) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Income</h5>
+                    <h2 class="card-text">₹{{ "{:,.2f}".format(total_income) }}</h2>
+                    <p class="mb-0">Avg Monthly: ₹{{ "{:,.2f}".format(avg_monthly_income) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Expenses</h5>
+                    <h2 class="card-text">₹{{ "{:,.2f}".format(total_expenses) }}</h2>
+                    <p class="mb-0">Avg Monthly: ₹{{ "{:,.2f}".format(avg_monthly_expenses) }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Monthly Savings</h5>
+                    <h2 class="card-text">₹{{ "{:,.2f}".format(avg_monthly_savings) }}</h2>
+                    <p class="mb-0">Expense Ratio: {{ "{:.1f}%".format(expense_ratio) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Analysis Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-4">Monthly Analysis</h3>
+        </div>
+        <!-- Monthly Income vs Expenses Chart -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Income vs Expenses Trend</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Monthly Savings Chart -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Monthly Savings</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlySavingsChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Analysis Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-4">Category Analysis</h3>
+        </div>
+        <!-- Category Distribution -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Expense Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryPieChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Category Trends -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Category Trends</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryTrendChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Analysis & Forecasting -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="mb-4">Daily Analysis & Forecasting</h3>
+        </div>
+        <!-- Daily Spending Pattern -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Daily Spending Pattern</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="dailySpendingChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <!-- Forecasting -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Financial Forecast</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Projected Income</h6>
+                            <p class="text-success h4">₹{{ "{:,.2f}".format(income_forecast) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Projected Expenses</h6>
+                            <p class="text-danger h4">₹{{ "{:,.2f}".format(expense_forecast) }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h6>Insights</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Highest expense category: <strong>{{ highest_category.category }}</strong>
+                                (₹{{ "{:,.2f}".format(highest_category.amount) }})
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-piggy-bank me-2"></i>
+                                Current savings rate: <strong>{{ "{:.1f}%".format(savings_rate) }}</strong>
+                            </li>
+                            <li>
+                                <i class="fas fa-balance-scale me-2"></i>
+                                Expense to income ratio: <strong>{{ "{:.1f}%".format(expense_ratio) }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Monthly Analysis - Enhanced Income vs Expenses Trend
+const monthlyData = {{ monthly_data|tojson }};
+const months = Object.keys(monthlyData).sort();
+const incomeData = months.map(month => monthlyData[month].income || 0);
+const expenseData = months.map(month => monthlyData[month].expenses || 0);
+const netData = months.map(month => monthlyData[month].net || 0);
+
+// Calculate moving averages for trend lines
+const calculateMovingAverage = (data, period) => {
+    if (!data || data.length < period) return Array(data.length).fill(null);
+    return data.map((value, index) => {
+        if (index < period - 1) return null;
+        const slice = data.slice(index - period + 1, index + 1);
+        const validValues = slice.filter(v => v !== null && !isNaN(v));
+        if (validValues.length === 0) return null;
+        return validValues.reduce((a, b) => a + b, 0) / validValues.length;
+    });
+};
+
+const incomeMA = calculateMovingAverage(incomeData, 3);
+const expenseMA = calculateMovingAverage(expenseData, 3);
+
+// Helper function to format currency
+const formatCurrency = (value) => {
+    if (value === null || isNaN(value)) return '₹0.00';
+    return '₹' + value.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+};
+
+// Helper function to format percentage
+const formatPercentage = (value) => {
+    if (value === null || isNaN(value)) return '0%';
+    return value.toFixed(1) + '%';
+};
+
+// Monthly Trend Chart
+new Chart(document.getElementById('monthlyTrendChart'), {
+    type: 'bar',
+    data: {
+        labels: months,
+        datasets: [
+            {
+                label: 'Income',
+                data: incomeData,
+                backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                borderColor: 'rgba(46, 204, 113, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'Expenses',
+                data: expenseData,
+                backgroundColor: 'rgba(231, 76, 60, 0.6)',
+                borderColor: 'rgba(231, 76, 60, 1)',
+                borderWidth: 2
+            },
+            {
+                label: 'Income Trend',
+                data: incomeMA,
+                type: 'line',
+                borderColor: 'rgba(52, 231, 43, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4
+            },
+            {
+                label: 'Expense Trend',
+                data: expenseMA,
+                type: 'line',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.4
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#fff',
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                },
+                ticks: {
+                    color: '#fff'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                },
+                ticks: {
+                    color: '#fff',
+                    callback: function(value) {
+                        return '₹' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Monthly Savings Chart
+const monthlySavings = {{ monthly_savings|tojson }};
+const savingsData = months.map(month => monthlySavings[month] || 0);
+
+new Chart(document.getElementById('monthlySavingsChart'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [{
+            label: 'Savings',
+            data: savingsData,
+            backgroundColor: 'rgba(52, 152, 219, 0.6)',
+            borderColor: 'rgba(52, 152, 219, 1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#fff',
+                    font: {
+                        size: 12
+                    }
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 1
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                },
+                ticks: {
+                    color: '#fff'
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)'
+                },
+                ticks: {
+                    color: '#fff',
+                    callback: function(value) {
+                        return '₹' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Category Distribution
+const categoryData = {{ category_data|tojson }};
+const categories = Object.keys(categoryData);
+const categoryAmounts = categories.map(cat => categoryData[cat] || 0);
+const totalExpenses = categoryAmounts.reduce((a, b) => a + b, 0);
+const categoryPercentages = categoryAmounts.map(amount => (amount / totalExpenses * 100) || 0);
+
+new Chart(document.getElementById('categoryPieChart'), {
+    type: 'doughnut',
+    data: {
+        labels: Object.keys(categoryData),
+        datasets: [{
+            data: Object.values(categoryData),
+            backgroundColor: [
+                'rgba(46, 204, 113, 0.8)',
+                'rgba(52, 152, 219, 0.8)',
+                'rgba(155, 89, 182, 0.8)',
+                'rgba(241, 196, 15, 0.8)',
+                'rgba(230, 126, 34, 0.8)',
+                'rgba(231, 76, 60, 0.8)'
+            ],
+            borderColor: [
+                'rgba(46, 204, 113, 1)',
+                'rgba(52, 152, 219, 1)',
+                'rgba(155, 89, 182, 1)',
+                'rgba(241, 196, 15, 1)',
+                'rgba(230, 126, 34, 1)',
+                'rgba(231, 76, 60, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: {
+                    color: '#fff',
+                    font: {
+                        size: 12
+                    },
+                    padding: 20
+                }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 1,
+                callbacks: {
+                    label: function(context) {
+                        let label = context.label || '';
+                        let value = context.raw || 0;
+                        return label + ': ₹' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Category Trends
+const categoryTrends = {{ category_trends|tojson }};
+const trendDatasets = Object.entries(categoryTrends).map(([category, trend], index) => ({
+    label: category,
+    data: trend,
+    borderColor: `hsl(${index * 360 / Object.keys(categoryTrends).length}, 70%, 50%)`,
+    backgroundColor: `hsla(${index * 360 / Object.keys(categoryTrends).length}, 70%, 50%, 0.1)`,
+    borderWidth: 2,
+    fill: false,
+    tension: 0.4
+}));
+
+new Chart(document.getElementById('categoryTrendChart'), {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: trendDatasets
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            mode: 'index',
+            intersect: false
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => formatCurrency(value)
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: context => {
+                        const label = context.dataset.label || '';
+                        const value = context.parsed.y;
+                        return `${label}: ${formatCurrency(value)}`;
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Daily Spending Pattern
+const dailyExpenses = {{ daily_expenses|tojson }};
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const dailyData = weekdays.map(day => dailyExpenses[day] || 0);
+
+new Chart(document.getElementById('dailySpendingChart'), {
+    type: 'bar',
+    data: {
+        labels: weekdays,
+        datasets: [{
+            label: 'Average Daily Spending',
+            data: dailyData,
+            backgroundColor: 'rgba(255, 193, 7, 0.4)',
+            borderColor: 'rgba(255, 193, 7, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: value => formatCurrency(value)
+                }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: context => {
+                        const label = context.dataset.label || '';
+                        const value = context.parsed.y;
+                        return `${label}: ${formatCurrency(value)}`;
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Investment Type Selection -->
+    <div class="card mb-4">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Investment Type</h5>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="investmentToggle">
+                <label class="form-check-label" for="investmentToggle">
+                    <span id="toggleLabel">Switch to Cryptocurrency</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Market Section -->
+    <div id="stocksSection">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Stock Market
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for stock in stock_data %}
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    {% if stock.logo %}
+                                    <img src="{{ stock.logo }}" alt="{{ stock.symbol }}" class="me-2" style="width: 24px; height: 24px;">
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0">{{ stock.symbol }}</h6>
+                                        <small class="text-muted">{{ stock.name }}</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="mb-0">${{ "%.2f"|format(stock.price) }}</h4>
+                                    <span class="badge {{ 'bg-success' if stock.change_percent > 0 else 'bg-danger' }}">
+                                        {{ "%.2f"|format(stock.change_percent) }}%
+                                    </span>
+                                </div>
+                                <div class="row g-2 text-center">
+                                    <div class="col-6">
+                                        <div class="bg-light rounded p-2">
+                                            <small class="text-muted d-block">High</small>
+                                            <span>${{ "%.2f"|format(stock.high) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light rounded p-2">
+                                            <small class="text-muted d-block">Low</small>
+                                            <span>${{ "%.2f"|format(stock.low) }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if stock.market_cap %}
+                                <div class="mt-2 text-center">
+                                    <small class="text-muted">Market Cap: ${{ (stock.market_cap / 1000)|round(1) }}B</small>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Recommendations -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>Stock Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for recommendation in stock_recommendations %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ recommendation.symbol }}</h5>
+                                <p class="card-text">{{ recommendation.analysis }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">Target: ${{ "%.2f"|format(recommendation.target_price) }}</span>
+                                    <span class="badge {{ 'bg-success' if recommendation.recommendation == 'Buy' else 'bg-warning' }}">
+                                        {{ recommendation.recommendation }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cryptocurrency Section -->
+    <div id="cryptoSection" style="display: none;">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0">
+                    <i class="fab fa-bitcoin me-2"></i>Cryptocurrency Market
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for crypto in crypto_data %}
+                    <div class="col-md-6 col-lg-3 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">{{ crypto.symbol }}</h6>
+                                    <span class="badge {{ 'bg-success' if crypto.change_percent > 0 else 'bg-danger' }}">
+                                        {{ "%.2f"|format(crypto.change_percent) }}%
+                                    </span>
+                                </div>
+                                <h4 class="mb-3">${{ "%.2f"|format(crypto.price) }}</h4>
+                                <div class="row g-2 text-center">
+                                    <div class="col-6">
+                                        <div class="bg-light rounded p-2">
+                                            <small class="text-muted d-block">24h High</small>
+                                            <span>${{ "%.2f"|format(crypto.high) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light rounded p-2">
+                                            <small class="text-muted d-block">24h Low</small>
+                                            <span>${{ "%.2f"|format(crypto.low) }}</span>
+                                        </div>
+                                    </div>
+                                    {% if crypto.volume > 0 %}
+                                    <div class="col-12 mt-2">
+                                        <div class="bg-light rounded p-2">
+                                            <small class="text-muted d-block">24h Volume</small>
+                                            <span>{{ "{:,.0f}".format(crypto.volume) }}</span>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Crypto Recommendations -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>Cryptocurrency Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for recommendation in crypto_recommendations %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ recommendation.symbol }}</h5>
+                                <p class="card-text">{{ recommendation.analysis }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-primary">Target: ${{ "%.2f"|format(recommendation.target_price) }}</span>
+                                    <span class="badge {{ 'bg-success' if recommendation.recommendation == 'Buy' else 'bg-warning' }}">
+                                        {{ recommendation.recommendation }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toggle Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggle = document.getElementById('investmentToggle');
+    const toggleLabel = document.getElementById('toggleLabel');
+    const stocksSection = document.getElementById('stocksSection');
+    const cryptoSection = document.getElementById('cryptoSection');
+
+    toggle.addEventListener('change', function() {
+        if (this.checked) {
+            stocksSection.style.display = 'none';
+            cryptoSection.style.display = 'block';
+            toggleLabel.textContent = 'Switch to Stocks';
+        } else {
+            stocksSection.style.display = 'block';
+            cryptoSection.style.display = 'none';
+            toggleLabel.textContent = 'Switch to Cryptocurrency';
+        }
+    });
+});
+
+// Refresh data every minute
+setTimeout(function() {
+    location.reload();
+}, 60000);
+</script>
+{% endblock %}

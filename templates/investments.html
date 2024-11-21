@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Market Type Selector -->
+    <div class="d-flex justify-content-center mb-4">
+        <div class="btn-group" role="group" aria-label="Market selector">
+            <input type="radio" class="btn-check" name="marketType" id="stockBtn" autocomplete="off" checked>
+            <label class="btn btn-outline-primary" for="stockBtn">
+                <i class="fas fa-chart-line me-2"></i>Stocks
+            </label>
+            
+            <input type="radio" class="btn-check" name="marketType" id="cryptoBtn" autocomplete="off">
+            <label class="btn btn-outline-primary" for="cryptoBtn">
+                <i class="fab fa-bitcoin me-2"></i>Crypto
+            </label>
+
+            <button type="button" class="btn btn-outline-success ms-2" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stock Market Section -->
+    <div id="stockSection">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Indian Stock Market</h3>
+            </div>
+            <div class="card-body">
+                <!-- Stock Recommendations -->
+                <div class="alert alert-info mb-4">
+                    <h4 class="alert-heading">Stock Market Insights</h4>
+                    <ul class="mb-0">
+                        {% for recommendation in stock_recommendations %}
+                        <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="table-responsive-sm">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-nowrap">Symbol</th>
+                                <th class="text-nowrap">Company</th>
+                                <th class="text-nowrap">Price (₹)</th>
+                                <th class="text-nowrap">Change (₹)</th>
+                                <th class="text-nowrap">Change (%)</th>
+                                <th class="text-nowrap">High (₹)</th>
+                                <th class="text-nowrap">Low (₹)</th>
+                                <th class="text-nowrap">Market Cap (Cr)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in stock_data %}
+                            <tr class="{{ 'table-success' if stock.change_percent > 0 else 'table-danger' if stock.change_percent < 0 else '' }}">
+                                <td class="text-nowrap"><strong>{{ stock.symbol }}</strong></td>
+                                <td class="text-nowrap">{{ stock.name }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(stock.price) }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(stock.change) }}</td>
+                                <td class="text-nowrap">{{ "{:,.2f}".format(stock.change_percent) }}%</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(stock.high) }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(stock.low) }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(stock.market_cap) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Investment Platforms Section -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3 class="card-title mb-0">Investment Platforms</h3>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <!-- Zerodha -->
+            <div class="col">
+                <div class="card h-100 border-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/zerodha-logo.svg') }}" alt="Zerodha" class="me-2" style="height: 40px;">
+                            <h5 class="card-title mb-0">Zerodha</h5>
+                        </div>
+                        <p class="card-text">
+                            <i class="fas fa-check-circle text-success me-2"></i>₹0 equity delivery
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>₹20 or 0.03% per order
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>Modern trading platforms
+                        </p>
+                        <a href="https://zerodha.com/open-account" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-external-link-alt me-2"></i>Open Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Groww -->
+            <div class="col">
+                <div class="card h-100 border-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/groww-logo.svg') }}" alt="Groww" class="me-2" style="height: 40px;">
+                            <h5 class="card-title mb-0">Groww</h5>
+                        </div>
+                        <p class="card-text">
+                            <i class="fas fa-check-circle text-success me-2"></i>₹0 account opening
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>₹20 per order
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>User-friendly mobile app
+                        </p>
+                        <a href="https://groww.in/stocks" target="_blank" class="btn btn-success">
+                            <i class="fas fa-external-link-alt me-2"></i>Open Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upstox -->
+            <div class="col">
+                <div class="card h-100 border-danger">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='images/upstox-logo.svg') }}" alt="Upstox" class="me-2" style="height: 40px;">
+                            <h5 class="card-title mb-0">Upstox</h5>
+                        </div>
+                        <p class="card-text">
+                            <i class="fas fa-check-circle text-success me-2"></i>₹0 delivery trades
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>₹20 per order
+                            <br>
+                            <i class="fas fa-check-circle text-success me-2"></i>Advanced trading tools
+                        </p>
+                        <a href="https://upstox.com/open-account/" target="_blank" class="btn btn-danger">
+                            <i class="fas fa-external-link-alt me-2"></i>Open Account
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="alert alert-info mt-4 mb-0">
+            <h5 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Important Notes:</h5>
+            <ul class="mb-0">
+                <li>All platforms are SEBI registered and regulated</li>
+                <li>Compare features and pricing before choosing a platform</li>
+                <li>Check platform reviews and customer support quality</li>
+                <li>Ensure you have required KYC documents ready</li>
+                <li>Read all terms and conditions carefully</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <!-- Cryptocurrency Section -->
+    <div id="cryptoSection" style="display: none;">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h3 class="card-title mb-0">Cryptocurrency Market</h3>
+            </div>
+            <div class="card-body">
+                <!-- Crypto Recommendations -->
+                <div class="alert alert-info mb-4">
+                    <h4 class="alert-heading">Crypto Market Insights</h4>
+                    <ul class="mb-0">
+                        {% for recommendation in crypto_recommendations %}
+                        <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="table-responsive-sm">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-nowrap">Currency</th>
+                                <th class="text-nowrap">Price (₹)</th>
+                                <th class="text-nowrap">Change (₹)</th>
+                                <th class="text-nowrap">Change (%)</th>
+                                <th class="text-nowrap">24h High (₹)</th>
+                                <th class="text-nowrap">24h Low (₹)</th>
+                                <th class="text-nowrap">24h Volume</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for crypto in crypto_data %}
+                            <tr class="{{ 'table-success' if crypto.change_percent > 0 else 'table-danger' if crypto.change_percent < 0 else '' }}">
+                                <td class="text-nowrap"><strong>{{ crypto.symbol }}</strong></td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(crypto.price) }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(crypto.change) }}</td>
+                                <td class="text-nowrap">{{ "{:,.2f}".format(crypto.change_percent) }}%</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(crypto.high) }}</td>
+                                <td class="text-nowrap">₹{{ "{:,.2f}".format(crypto.low) }}</td>
+                                <td class="text-nowrap">{{ "{:,.0f}".format(crypto.volume) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle section visibility
+    const stockSection = document.getElementById('stockSection');
+    const cryptoSection = document.getElementById('cryptoSection');
+    const stockBtn = document.getElementById('stockBtn');
+    const cryptoBtn = document.getElementById('cryptoBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    stockBtn.addEventListener('change', function() {
+        if (this.checked) {
+            stockSection.style.display = 'block';
+            cryptoSection.style.display = 'none';
+            localStorage.setItem('selectedMarket', 'stocks');
+        }
+    });
+
+    cryptoBtn.addEventListener('change', function() {
+        if (this.checked) {
+            stockSection.style.display = 'none';
+            cryptoSection.style.display = 'block';
+            localStorage.setItem('selectedMarket', 'crypto');
+        }
+    });
+
+    // Refresh button handler
+    refreshBtn.addEventListener('click', function() {
+        // Add spinning animation to refresh icon
+        const refreshIcon = refreshBtn.querySelector('i');
+        refreshIcon.classList.add('fa-spin');
+        
+        // Disable the button during refresh
+        refreshBtn.disabled = true;
+        
+        // Reload the page
+        window.location.reload();
+    });
+
+    // Restore last selected view
+    const lastSelected = localStorage.getItem('selectedMarket');
+    if (lastSelected === 'crypto') {
+        cryptoBtn.click();
+    }
+</script>
+{% endblock %}

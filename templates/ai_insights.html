@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    {% if error %}
+    <div class="col-12">
+        <div class="alert alert-warning">
+            {{ error }}
+        </div>
+    </div>
+    {% else %}
+    <!-- Financial Health Overview -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-heart me-2"></i>Financial Health Overview</h5>
+            </div>
+            <div class="card-body">
+                <!-- Risk Score -->
+                <div class="text-center mb-4">
+                    <div class="display-4 mb-2">{{ "{:.0f}".format(data.risk_analysis.risk_score) }}/100</div>
+                    <h6 class="text-muted">Overall Financial Health Score</h6>
+                    <div class="progress mt-2" style="height: 25px;">
+                        <div class="progress-bar {{ 'bg-success' if data.risk_analysis.overall_risk == 'Low' else 'bg-warning' if data.risk_analysis.overall_risk == 'Medium' else 'bg-danger' }}" 
+                             role="progressbar" 
+                             style="width: {{ data.risk_analysis.risk_score }}%">
+                            {{ data.risk_analysis.overall_risk }} Risk Level
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="row g-4">
+                    {% for metric, info in data.risk_analysis.indicators.items() %}
+                    <div class="col-md-4">
+                        <div class="card h-100 {{ 'border-success' if info.status == 'Low' else 'border-warning' if info.status == 'Medium' else 'border-danger' }}">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">{{ metric|title|replace('_', ' ') }}</h6>
+                                <div class="display-6 mb-2">{{ info.value }}</div>
+                                <div class="badge {{ 'bg-success' if info.status == 'Low' else 'bg-warning' if info.status == 'Medium' else 'bg-danger' }}">
+                                    {{ info.status }} Risk
+                                </div>
+                                <p class="card-text mt-2"><small>{{ info.description }}</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Risk Details -->
+                {% if data.risk_analysis.details %}
+                <div class="mt-4">
+                    <h6>Risk Factors</h6>
+                    <div class="row g-3">
+                        {% for detail in data.risk_analysis.details %}
+                        <div class="col-md-6">
+                            <div class="alert {{ 'alert-danger' if detail.type == 'alert' else 'alert-warning' }} mb-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="fas {{ 'fa-exclamation-circle' if detail.type == 'alert' else 'fa-exclamation-triangle' }} fa-2x"></i>
+                                    </div>
+                                    <div>
+                                        <p class="mb-0">{{ detail.message }}</p>
+                                        <small class="text-muted">Impact: {{ detail.score_impact }}pts</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Recommendations -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Smart Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    {% for rec in data.recommendations %}
+                    <div class="col-md-6">
+                        <div class="card h-100 {{ 'border-danger' if rec.priority == 'high' else 'border-warning' }}">
+                            <div class="card-header {{ 'bg-danger' if rec.priority == 'high' else 'bg-warning' }} text-white">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas {{ 'fa-exclamation-circle' if rec.priority == 'high' else 'fa-info-circle' }} me-2"></i>
+                                    <h6 class="mb-0">{{ rec.category|title }} Recommendation</h6>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ rec.message }}</p>
+                                {% if rec.details %}
+                                <div class="alert alert-light border mb-3">
+                                    <small class="d-block">Current spending: ₹{{ "{:,.2f}".format(rec.details.current_spending) }}</small>
+                                    <small class="d-block">Percentage: {{ "{:.1f}".format(rec.details.percentage) }}%</small>
+                                </div>
+                                {% endif %}
+                                {% if rec.action_items %}
+                                <h6 class="mt-3 mb-2">Action Items:</h6>
+                                <ul class="list-group list-group-flush">
+                                    {% for action in rec.action_items %}
+                                    <li class="list-group-item">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {{ action }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spending Analysis -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Spending Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div id="categoryChart" class="mb-4"></div>
+                <h6>Top Expense Categories</h6>
+                <div class="list-group">
+                    {% for category in data.spending_analysis.top_expenses %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ category }}</h6>
+                                <small class="text-muted">
+                                    ₹{{ "{:,.2f}".format(data.spending_analysis.categories[category].sum) }}
+                                </small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">
+                                {{ "{:.1f}".format(data.spending_analysis.categories[category].percentage) }}%
+                            </span>
+                        </div>
+                        <div class="progress mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-info" 
+                                 role="progressbar" 
+                                 style="width: {{ data.spending_analysis.categories[category].percentage }}%">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spending Patterns -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="fas fa-brain me-2"></i>Spending Patterns</h5>
+            </div>
+            <div class="card-body">
+                {% if data.spending_analysis.patterns.clusters %}
+                <div class="patterns-list">
+                    {% for cluster in data.spending_analysis.patterns.clusters %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title">Pattern {{ loop.index }}</h6>
+                            <p class="card-text">{{ cluster.description }}</p>
+                            <div class="mt-3">
+                                <h6 class="text-muted mb-2">Top Categories</h6>
+                                {% for category in cluster.dominant_categories %}
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>{{ category }}</span>
+                                        <span class="badge bg-secondary">
+                                            ₹{{ "{:,.2f}".format(cluster.avg_spending[category]) }}
+                                        </span>
+                                    </div>
+                                    <div class="progress mt-1" style="height: 5px;">
+                                        <div class="progress-bar bg-{{ loop.index }}" 
+                                             role="progressbar" 
+                                             style="width: {{ (cluster.avg_spending[category] / cluster.avg_spending[cluster.dominant_categories[0]] * 100)|round }}%">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                    <p>Add more transactions to discover spending patterns.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Category Chart
+    const categoryData = {{ data.spending_analysis.categories|tojson|safe if data and data.spending_analysis else '{}' }};
+    if (Object.keys(categoryData).length > 0) {
+        const categories = Object.keys(categoryData);
+        const values = categories.map(cat => categoryData[cat].percentage);
+        
+        const trace = {
+            labels: categories,
+            values: values,
+            type: 'pie',
+            textinfo: 'label+percent',
+            hoverinfo: 'label+value+percent',
+            hole: 0.4,
+            marker: {
+                colors: ['#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0', '#00BCD4', '#795548', '#607D8B']
+            }
+        };
+
+        const layout = {
+            showlegend: false,
+            height: 300,
+            margin: {t: 0, r: 0, l: 0, b: 0}
+        };
+
+        Plotly.newPlot('categoryChart', [trace], layout);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base_no_nav.html" %}
+
+{% block content %}
+<!-- Hero Section with 3D Animation -->
+<div class="hero-section py-5">
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <div class="hero-content">
+                    <h1 class="display-4 mb-4 text-gradient">Transform Your Financial Future with AI</h1>
+                    <p class="lead mb-4 text-glow">Experience the power of AI-driven insights to make smarter financial decisions and grow your wealth</p>
+                    
+                    {% if not current_user.is_authenticated %}
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-3d btn-lg px-4 gap-3 glass-button">
+                            <i class="fas fa-sign-in-alt me-2"></i>Start Your Journey
+                        </a>
+                        <a href="{{ url_for('register') }}" class="btn btn-light btn-3d btn-lg px-4 glass-button-secondary">
+                            <i class="fas fa-user-plus me-2"></i>Join Us
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-3d btn-lg px-4 gap-3 glass-button">
+                            <i class="fas fa-tachometer-alt me-2"></i>View Your Portfolio
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Animated Background -->
+    <div class="animated-background">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+</div>
+
+<!-- Features Section with Enhanced 3D Cards -->
+<div class="features-section py-5">
+    <div class="container">
+        <div class="row mt-4 g-4">
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-robot fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="card-title h4">AI-Powered Insights</h3>
+                        <p class="card-text">Get personalized financial recommendations and market predictions powered by advanced machine learning algorithms.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle text-success"></i> Smart Portfolio Analysis</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Market Trend Predictions</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Risk Assessment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-chart-line fa-2x text-success"></i>
+                        </div>
+                        <h3 class="card-title h4">Smart Investment Tracking</h3>
+                        <p class="card-text">Monitor your investments in real-time with advanced analytics and visualization tools.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle text-success"></i> Real-time Portfolio Updates</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Performance Analytics</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Investment Opportunities</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="fas fa-shield-alt fa-2x text-warning"></i>
+                        </div>
+                        <h3 class="card-title h4">Secure & Private</h3>
+                        <p class="card-text">Your financial data is protected with bank-grade security and encryption standards.</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-check-circle text-success"></i> End-to-End Encryption</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Secure Authentication</li>
+                            <li><i class="fas fa-check-circle text-success"></i> Regular Security Audits</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Call to Action Section -->
+<div class="cta-section py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Transform Your Financial Future?</h2>
+        <p class="lead mb-4">Join thousands of users who are already making smarter financial decisions with AI</p>
+        {% if not current_user.is_authenticated %}
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                <i class="fas fa-rocket me-2"></i>Get Started Now
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="footer py-4">
+    <div class="container text-center">
+        <div class="social-links mb-3">
+            <a href="https://github.com/DadvaiahPavan" target="_blank" class="social-link">
+                <i class="fab fa-github fa-2x"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/dadvaiah-pavan/" target="_blank" class="social-link">
+                <i class="fab fa-linkedin fa-2x"></i>
+            </a>
+        </div>
+        <p class="mb-0">&copy; 2024 AI Finance Manager. All rights reserved.</p>
+    </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Counter Animation
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // Animate all counters when they come into view
+    const counterElements = document.querySelectorAll('.counter');
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const value = parseInt(target.innerText.replace(/[^0-9]/g, ''));
+                animateValue(target, 0, value, 2000);
+                observer.unobserve(target);
+            }
+        });
+    });
+
+    counterElements.forEach(counter => {
+        observer.observe(counter);
+    });
+</script>
+{% endblock %}
