@@ -83,7 +83,7 @@ flask db upgrade
 
 6. Run the application:
 ```bash
-flask run
+python app.py
 ```
 
 ## Environment Variables
@@ -160,4 +160,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
   - [Upstox](https://upstox.com)
 
 ---
-Made with by [Your Name]
+Made with by Pavan Dadvaiah 
