@@ -1,3 +1,5 @@
+setuptools
+wheel
 Flask==2.0.1
 Flask-SQLAlchemy==2.5.1
 Flask-Login==0.5.0
@@ -14,5 +16,4 @@ Werkzeug==2.0.1
 plotly==5.3.1
 gunicorn==20.1.0
 requests==2.26.0
-setuptools
-wheel
+
