@@ -2,6 +2,6 @@ services:
   - type: web
     name: ai-finance-app
     env: python
-    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "python app.py"
     pythonVersion: 3.10
