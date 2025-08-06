@@ -1,7 +1,15 @@
 services:
   - type: web
-    name: ai-finance-app
+    name: ai-finance-management-system
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python app.py"
-    pythonVersion: 3.10
+    buildCommand: |
+      python -c "
+import os
+from app import app, db
+with app.app_context():
+    db.create_all()
+"
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PORT
+        value: 10000
