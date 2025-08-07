@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here-change-in-production')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'fa3e1e5c9b7244b6b8c42064d57bdb35f50d39d64ae6b9c3e7d4c1b72de8d4a6')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///finance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
