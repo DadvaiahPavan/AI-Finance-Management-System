@@ -18,9 +18,16 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'fa3e1e5c9b7244b6b8c42064d57bdb35f50d39d64ae6b9c3e7d4c1b72de8d4a6')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///finance.db')
+
+# Database configuration - handle both local and production
+database_url = os.getenv('DATABASE_URL', 'sqlite:///finance.db')
+if database_url.startswith('postgres://'):
+    database_url = database_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Initialize extensions
 db = SQLAlchemy()
 db.init_app(app)
 bcrypt = Bcrypt(app)
@@ -49,6 +56,18 @@ class Transaction(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# Initialize database
+def init_db():
+    """Initialize database tables"""
+    try:
+        with app.app_context():
+            db.create_all()
+            print("✅ Database tables created successfully")
+            return True
+    except Exception as e:
+        print(f"❌ Error creating database tables: {str(e)}")
+        return False
+
 # Routes
 @app.route('/')
 def index():
@@ -57,107 +76,153 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
-        
-        if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid username or password', 'error')
+        try:
+            username = request.form.get('username')
+            password = request.form.get('password')
+            
+            if not username or not password:
+                flash('Please provide both username and password', 'error')
+                return render_template('login.html')
+            
+            user = User.query.filter_by(username=username).first()
+            
+            if user and bcrypt.check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid username or password', 'error')
+        except Exception as e:
+            print(f"Login error: {str(e)}")
+            flash('An error occurred during login. Please try again.', 'error')
+    
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        if User.query.filter_by(username=username).first():
-            flash('Username already exists', 'error')
-            return redirect(url_for('register'))
+        try:
+            username = request.form.get('username')
+            email = request.form.get('email')
+            password = request.form.get('password')
             
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        user = User(username=username, email=email, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('Registration successful! Please login.', 'success')
-        return redirect(url_for('login'))
+            if not username or not email or not password:
+                flash('Please fill in all fields', 'error')
+                return render_template('register.html')
+            
+            # Check if user already exists
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                flash('Username already exists', 'error')
+                return render_template('register.html')
+                
+            existing_email = User.query.filter_by(email=email).first()
+            if existing_email:
+                flash('Email already registered', 'error')
+                return render_template('register.html')
+            
+            # Create new user
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            user = User(username=username, email=email, password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('login'))
+            
+        except Exception as e:
+            print(f"Registration error: {str(e)}")
+            db.session.rollback()
+            flash('An error occurred during registration. Please try again.', 'error')
+    
     return render_template('register.html')
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.date.desc()).all()
-    
-    # Calculate financial summary
-    total_income = sum(t.amount for t in transactions if t.transaction_type == 'income')
-    total_expenses = sum(t.amount for t in transactions if t.transaction_type == 'expense')
-    balance = total_income - total_expenses
-    
-    # Get monthly summary
-    current_month = datetime.utcnow().month
-    monthly_transactions = [t for t in transactions if t.date.month == current_month]
-    monthly_income = sum(t.amount for t in monthly_transactions if t.transaction_type == 'income')
-    monthly_expenses = sum(t.amount for t in monthly_transactions if t.transaction_type == 'expense')
-    
-    return render_template('dashboard.html', 
-                         transactions=transactions,
-                         total_income=total_income,
-                         total_expenses=total_expenses,
-                         balance=balance,
-                         monthly_income=monthly_income,
-                         monthly_expenses=monthly_expenses)
+    try:
+        transactions = Transaction.query.filter_by(user_id=current_user.id).order_by(Transaction.date.desc()).all()
+        
+        # Calculate financial summary
+        total_income = sum(t.amount for t in transactions if t.transaction_type == 'income')
+        total_expenses = sum(t.amount for t in transactions if t.transaction_type == 'expense')
+        balance = total_income - total_expenses
+        
+        # Get monthly summary
+        current_month = datetime.utcnow().month
+        monthly_transactions = [t for t in transactions if t.date.month == current_month]
+        monthly_income = sum(t.amount for t in monthly_transactions if t.transaction_type == 'income')
+        monthly_expenses = sum(t.amount for t in monthly_transactions if t.transaction_type == 'expense')
+        
+        return render_template('dashboard.html', 
+                             transactions=transactions,
+                             total_income=total_income,
+                             total_expenses=total_expenses,
+                             balance=balance,
+                             monthly_income=monthly_income,
+                             monthly_expenses=monthly_expenses)
+    except Exception as e:
+        print(f"Dashboard error: {str(e)}")
+        flash('An error occurred loading the dashboard', 'error')
+        return render_template('dashboard.html', 
+                             transactions=[],
+                             total_income=0,
+                             total_expenses=0,
+                             balance=0,
+                             monthly_income=0,
+                             monthly_expenses=0)
 
 @app.route('/add_transaction', methods=['POST'])
 @login_required
 def add_transaction():
-    amount = float(request.form.get('amount'))
-    category = request.form.get('category')
-    transaction_type = request.form.get('transaction_type')
-    description = request.form.get('description')
-    
-    transaction = Transaction(
-        amount=amount,
-        category=category,
-        transaction_type=transaction_type,
-        description=description,
-        user_id=current_user.id
-    )
-    
-    db.session.add(transaction)
-    db.session.commit()
-    
-    # Get updated transaction count for spending patterns
-    transaction_count = Transaction.query.filter_by(user_id=current_user.id).count()
-    
-    if transaction_count >= 5:
-        # Analyze spending patterns
-        transactions = Transaction.query.filter_by(user_id=current_user.id).all()
-        spending_data = {}
-        for t in transactions:
-            if t.transaction_type == 'expense':
-                if t.category not in spending_data:
-                    spending_data[t.category] = 0
-                spending_data[t.category] += t.amount
+    try:
+        amount = float(request.form.get('amount'))
+        category = request.form.get('category')
+        transaction_type = request.form.get('transaction_type')
+        description = request.form.get('description')
         
-        # Find top spending categories
-        sorted_spending = sorted(spending_data.items(), key=lambda x: x[1], reverse=True)
-        top_categories = sorted_spending[:3] if len(sorted_spending) >= 3 else sorted_spending
+        transaction = Transaction(
+            amount=amount,
+            category=category,
+            transaction_type=transaction_type,
+            description=description,
+            user_id=current_user.id
+        )
         
-        # Generate spending insights
-        if top_categories:
-            insights = f"Top spending categories: {', '.join([f'{cat} (₹{amount:,.2f})' for cat, amount in top_categories])}"
+        db.session.add(transaction)
+        db.session.commit()
+        
+        # Get updated transaction count for spending patterns
+        transaction_count = Transaction.query.filter_by(user_id=current_user.id).count()
+        
+        if transaction_count >= 5:
+            # Analyze spending patterns
+            transactions = Transaction.query.filter_by(user_id=current_user.id).all()
+            spending_data = {}
+            for t in transactions:
+                if t.transaction_type == 'expense':
+                    if t.category not in spending_data:
+                        spending_data[t.category] = 0
+                    spending_data[t.category] += t.amount
+            
+            # Find top spending categories
+            sorted_spending = sorted(spending_data.items(), key=lambda x: x[1], reverse=True)
+            top_categories = sorted_spending[:3] if len(sorted_spending) >= 3 else sorted_spending
+            
+            # Generate spending insights
+            if top_categories:
+                insights = f"Top spending categories: {', '.join([f'{cat} (₹{amount:,.2f})' for cat, amount in top_categories])}"
+            else:
+                insights = "Add more transactions to discover detailed spending patterns."
+            
+            flash(f'Transaction added successfully! {insights}', 'success')
         else:
-            insights = "Add more transactions to discover detailed spending patterns."
+            remaining = 5 - transaction_count
+            flash(f'Transaction added successfully! Add {remaining} more transaction(s) to see spending patterns.', 'success')
         
-        flash(f'Transaction added successfully! {insights}', 'success')
-    else:
-        remaining = 5 - transaction_count
-        flash(f'Transaction added successfully! Add {remaining} more transaction(s) to see spending patterns.', 'success')
+    except Exception as e:
+        print(f"Add transaction error: {str(e)}")
+        db.session.rollback()
+        flash('Error adding transaction. Please try again.', 'error')
     
     return redirect(url_for('dashboard'))
 
@@ -852,7 +917,7 @@ def investments():
         # Function to generate stock recommendations
         def generate_stock_recommendation(stock_data):
             if not stock_data:
-                return "No stock data available for analysis."
+                return ["No stock data available for analysis."]
             
             recommendations = []
             total_market_cap = sum(stock['market_cap'] for stock in stock_data if stock['market_cap'] > 0)
@@ -908,7 +973,6 @@ def investments():
                 
                 response = requests.get(url, headers=headers)
                 print(f"HTTP Response for {stock['id']}:", response.status_code)
-                print(f"Response headers:", response.headers)
                 
                 if response.status_code == 200:
                     try:
@@ -1062,23 +1126,28 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-
-# ✅ Add this snippet just before __main__
+# Database initialization route for debugging
 @app.route('/initdb')
 def initdb():
-    with app.app_context():
-        db.create_all()
-    return 'Database tables created successfully!'
+    try:
+        with app.app_context():
+            db.create_all()
+        return 'Database tables created successfully!'
+    except Exception as e:
+        return f'Error creating database tables: {str(e)}'
 
-
-
+# Health check route
+@app.route('/health')
+def health():
+    return {'status': 'healthy', 'timestamp': datetime.utcnow().isoformat()}
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    # Initialize database on startup
+    init_db()
+    
+    # Get port from environment variable or default to 10000
     port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
-
-
+    
+    # Run the app
+    app.run(host='0.0.0.0', port=port, debug=False)
 

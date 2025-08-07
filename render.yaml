@@ -3,11 +3,18 @@ services:
     name: ai-finance-management-system
     env: python
     buildCommand: |
+      pip install --upgrade pip
       pip install -r requirements.txt
       python init_db.py
-    startCommand: gunicorn app:app
+    startCommand: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
     envVars:
       - key: PORT
         value: 10000
       - key: SECRET_KEY
         generateValue: true
+      - key: FLASK_ENV
+        value: production
+      - key: DATABASE_URL
+        value: sqlite:///finance.db
+    healthCheckPath: /health
+
