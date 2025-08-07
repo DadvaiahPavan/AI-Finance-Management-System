@@ -3,12 +3,11 @@ services:
     name: ai-finance-management-system
     env: python
     buildCommand: |
-      python3 -c "
-from app import app, db
-with app.app_context():
-    db.create_all()
-"
+      pip install -r requirements.txt
+      python init_db.py
     startCommand: gunicorn app:app
     envVars:
       - key: PORT
         value: 10000
+      - key: SECRET_KEY
+        generateValue: true
