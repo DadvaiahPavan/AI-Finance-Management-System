@@ -1062,6 +1062,18 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
+
+# ✅ Add this snippet just before __main__
+@app.route('/initdb')
+def initdb():
+    with app.app_context():
+        db.create_all()
+    return 'Database tables created successfully!'
+
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
