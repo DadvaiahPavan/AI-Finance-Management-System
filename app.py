@@ -17,6 +17,7 @@ from sklearn.preprocessing import StandardScaler
 load_dotenv()
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///finance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -1062,6 +1063,9 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+        print("Database tables created successfully!")
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port, debug=False)
 
